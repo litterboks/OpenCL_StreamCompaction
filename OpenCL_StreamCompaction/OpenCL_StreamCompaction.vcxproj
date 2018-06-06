@@ -133,9 +133,13 @@
   <ItemGroup>
     <ClCompile Include="BlellochScan.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GpgpuSetup.cpp" />
+    <ClCompile Include="StreamCompaction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlellochScan.h" />
+    <ClInclude Include="GpgpuSetup.h" />
+    <ClInclude Include="StreamCompaction.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="scan.cl" />

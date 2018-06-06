@@ -2,6 +2,8 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "StreamCompaction.h"
+#include "GpgpuSetup.h"
 #include "BlellochScan.h"
 
 //defines for my system
@@ -10,29 +12,27 @@
 
 int main(void)
 {
-	BlellochScan blellochScan(NVIDIA_GPU);
+	GpgpuSetup gpgpuSetup(NVIDIA_GPU);
+	BlellochScan blellochScan(&gpgpuSetup);
+	StreamCompaction streamCompaction(&gpgpuSetup);
 
 	// something went wrong
-	if (blellochScan.GetError() != 0)
+	if (streamCompaction.GetError() != 0)
 	{
 		return -1;
 	}
 
-
-	unsigned int nArraySize = 2048;
+	unsigned int nArraySize = 4194304;
 	int* inputData = new int[nArraySize];
 
 	for (unsigned int i = 0; i < nArraySize; i++)
 	{
-		inputData[i] = 1;
+		inputData[i] = i;
 	}
 
-	int* outputData = new int[nArraySize];
-	
-	blellochScan.RunBlellochScan(inputData, outputData, nArraySize);
+	int* outputData;// = new int[nArraySize];
+
+	streamCompaction.CompactStream(inputData, outputData, nArraySize, StreamCompaction::Predicate::ODD);
 
 	return 0;
 }
-
-
-
