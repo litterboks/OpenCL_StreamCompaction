@@ -81,14 +81,13 @@ int StreamCompaction::CompactStream(int*& input, int*& output,  unsigned int nAr
 
 	unsigned int highestAddress = addresses[nArraySize -1];
 	unsigned int lastPredicateResult = predicateResults[nArraySize - 1];
-	int* resultSize = new int();
-	*resultSize = (lastPredicateResult == 0) ? highestAddress : highestAddress + 1;
-	cl_mem resultMem = clCreateBuffer(m_gpgpuSetup->m_context, CL_MEM_READ_WRITE, sizeof(int) * (*resultSize), NULL, &m_gpgpuSetup->m_ciErrNum);
+	int resultSize  = (lastPredicateResult == 0) ? highestAddress : highestAddress + 1;
+	cl_mem resultMem = clCreateBuffer(m_gpgpuSetup->m_context, CL_MEM_READ_WRITE, sizeof(int) * resultSize, NULL, &m_gpgpuSetup->m_ciErrNum);
 
 	clSetKernelArg(m_kernels->compact, 0, sizeof(cl_mem), &sourceMem);
 	clSetKernelArg(m_kernels->compact, 1, sizeof(cl_mem), &addressMem);
 	clSetKernelArg(m_kernels->compact, 2, sizeof(cl_mem), &resultMem);
-	clSetKernelArg(m_kernels->compact, 3, sizeof(cl_int), resultSize);
+	clSetKernelArg(m_kernels->compact, 3, sizeof(cl_int), &resultSize);
 
 	//execute kernel
 	clEnqueueNDRangeKernel(m_gpgpuSetup->m_commandQueue, m_kernels->compact, 1, 0, globalws, NULL, 0, NULL, NULL);
@@ -96,10 +95,11 @@ int StreamCompaction::CompactStream(int*& input, int*& output,  unsigned int nAr
 	clReleaseMemObject(sourceMem);
 	clReleaseMemObject(addressMem);
 
-	output = new int[*resultSize];
-	clEnqueueReadBuffer(m_gpgpuSetup->m_commandQueue, resultMem, CL_TRUE, 0, sizeof(cl_int) * (*resultSize), output, 0, NULL, NULL);
+	output = new int[resultSize];
+	clEnqueueReadBuffer(m_gpgpuSetup->m_commandQueue, resultMem, CL_TRUE, 0, sizeof(cl_int) * resultSize, output, 0, NULL, NULL);
 	clFinish(m_gpgpuSetup->m_commandQueue);
-	return 0;
+
+	return resultSize;
 }
 
 void StreamCompaction::CreateKernels()

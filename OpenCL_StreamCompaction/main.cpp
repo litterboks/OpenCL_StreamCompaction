@@ -22,7 +22,7 @@ int main(void)
 		return -1;
 	}
 
-	unsigned int nArraySize = 4194304;
+	unsigned int nArraySize = 536870912;
 	int* inputData = new int[nArraySize];
 
 	for (unsigned int i = 0; i < nArraySize; i++)
@@ -32,7 +32,7 @@ int main(void)
 
 	int* outputData;// = new int[nArraySize];
 
-	streamCompaction.CompactStream(inputData, outputData, nArraySize, StreamCompaction::Predicate::ODD);
+	int resultSize = streamCompaction.CompactStream(inputData, outputData, nArraySize, StreamCompaction::Predicate::ODD);
 
 	return 0;
 }

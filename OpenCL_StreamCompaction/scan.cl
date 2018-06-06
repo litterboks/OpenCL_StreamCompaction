@@ -88,10 +88,6 @@ __kernel void add_sums(__global int *data, __global int *sums)
 	int address2 = 2 * lthid + offset + 1;
 
 	int sum = sums[gid];
-	if (gid == 8)
-	{
-		printf("sum = %d\n", sums[gid]);
-	}
 	data[address] += sum;
 	data[address2] += sum;
 }
